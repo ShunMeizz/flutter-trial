@@ -1,16 +1,18 @@
 import 'package:neuroukey/services/auth/auth_provider.dart';
 import 'package:neuroukey/services/auth/auth_user.dart';
+import 'package:neuroukey/services/auth/firebase_auth_provider.dart';
 
 //AuthService will expose the functionalities of AuthProvider to the outside world,
 //the goal is to have AuthService to do more work than AuthProvider eventhough rn the
 //only thing it does is just delegates all its functionality to the auth provider
 class AuthService implements AuthProvider {
-  @override
-  Future<void> initialize() => provider.initialize();
-
   final AuthProvider provider;
   const AuthService(this.provider);
 
+  factory AuthService.firebase() => AuthService(FirebaseAuthProvider());
+
+  @override
+  Future<void> initialize() => provider.initialize();
   @override
   Future<AuthUser> createUser(
           {required String email, required String password}) =>
