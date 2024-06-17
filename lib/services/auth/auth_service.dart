@@ -9,7 +9,8 @@ import 'package:neuroukey/services/auth/firebase_auth_provider.dart';
 //only thing it does is just delegates all its functionality to the auth provider
 class AuthService implements AuthProvider {
   final AuthProvider provider;
-  const AuthService(this.provider);
+  const AuthService(
+      this.provider); //not making an assumption that the provider is always firebase
 
   factory AuthService.firebase() => AuthService(FirebaseAuthProvider());
 
