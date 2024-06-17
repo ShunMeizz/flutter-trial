@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
-
 import 'package:neuroukey/constants/routes.dart';
+import 'package:neuroukey/utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -55,19 +54,59 @@ class _LoginViewState extends State<LoginView> {
               try {
                 await FirebaseAuth.instance.signInWithEmailAndPassword(
                     email: email, password: password);
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  notesRoute,
-                  (route) => false,
-                );
-              } on FirebaseAuthException catch (e) {
-                if (e.code == 'user-not-found') {
-                  devtools.log("User not found");
-                } else if (e.code == 'wrong-password') {
-                  devtools.log("Wrong password");
+
+                final user = FirebaseAuth.instance.currentUser;
+                if (user?.emailVerified ?? false) {
+                  //user's email is verified
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    notesRoute,
+                    (route) => false,
+                  );
                 } else {
-                  devtools.log("Something else happened");
-                  devtools.log(e.code);
+                  //user's email is NOT verified
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    verifyEmailRoute,
+                    (route) => false,
+                  );
                 }
+              } on FirebaseAuthException catch (e) {
+                switch (e.code) {
+                  case 'invalid-credential':
+                    await showErrorDialog(
+                      context,
+                      'Invalid Credential',
+                    );
+                    break;
+                  case 'invalid-email':
+                    await showErrorDialog(
+                      context,
+                      'Invalid Email',
+                    );
+                    break;
+                  case 'user-not-found':
+                    await showErrorDialog(
+                      context,
+                      'User not found',
+                    );
+                    break;
+                  case 'wrong-password':
+                    await showErrorDialog(
+                      context,
+                      'Wrong password',
+                    );
+                    break;
+                  default:
+                    await showErrorDialog(
+                      context,
+                      'Error: ${e.code}',
+                    );
+                    break;
+                }
+              } catch (e) {
+                await showErrorDialog(
+                  context,
+                  e.toString(),
+                );
               }
             },
             child: const Text('Login'),
