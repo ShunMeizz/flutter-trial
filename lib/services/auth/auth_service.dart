@@ -2,6 +2,8 @@ import 'package:neuroukey/services/auth/auth_provider.dart';
 import 'package:neuroukey/services/auth/auth_user.dart';
 import 'package:neuroukey/services/auth/firebase_auth_provider.dart';
 
+//WE WILL IMPORT THIS CLASS IN OUR DART FILES IN VIEWS instead of import firebase
+
 //AuthService will expose the functionalities of AuthProvider to the outside world,
 //the goal is to have AuthService to do more work than AuthProvider eventhough rn the
 //only thing it does is just delegates all its functionality to the auth provider

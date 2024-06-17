@@ -1,8 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:neuroukey/constants/routes.dart';
-import 'package:neuroukey/firebase_options.dart';
+import 'package:neuroukey/services/auth/auth_service.dart';
 import 'package:neuroukey/views/login_view.dart';
 import 'package:neuroukey/views/notes_view.dart';
 import 'package:neuroukey/views/register_view.dart';
@@ -37,21 +35,12 @@ class HomePage extends StatelessWidget {
       //instead na mabutang ni siya inside sa TextButton pressed,
       //we will follow the architecture na e initialize daan si firebase
       //before performing such things: engines dayun framework
-      future: Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      ),
+      future: AuthService.firebase().initialize(),
       //Builder expects to return a widget mao ng return Text('Done' or 'Loading') kay text is widget
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
-            /*user can be null maong user?.emailVerified, but if user can be null then unsa man iyang buhaton
-              //na si boolean true or false man iya e output if user isn't null, then mao ng ?? false, para
-              //automatic false siya if null man gani si user
-              final user = FirebaseAuth.instance.currentUser;
-              if (user?.emailVerified ?? false) {
-                return const Text('Done');
-              } else {
-                ---THIS IS AN ANONYMOUS ROUTE--- 
+            /*---THIS IS AN ANONYMOUS ROUTE--- 
                 ---Anonymous route aren't as reusable---
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   Navigator.of(context).pushReplacement(
@@ -61,9 +50,9 @@ class HomePage extends StatelessWidget {
                   );
                 });
               }*/
-            final user = FirebaseAuth.instance.currentUser;
+            final user = AuthService.firebase().currentUser;
             if (user != null) {
-              if (user.emailVerified) {
+              if (user.isEmailVerified) {
                 return const NotesView();
               } else {
                 return const VerifyEmailView(); //---THIS IS NAMED ROUTE---
